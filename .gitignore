@@ -1,0 +1,4 @@
+.idea/
+*-help.txt
+terraform.tfvars
+.secret-*
