@@ -3,7 +3,7 @@ SHELL := /bin/bash
 
 .PHONY: build push save load rmi run rund run_shell exec_shell kill logs logsf rm start stop
 
-TERRAFORM_TFVARS_FILES := *.tfvars
+TERRAFORM_TFVARS_FILE_PATTERNS := *.tfvars
 
 define _LOAD_AWSRC :=
 	if [[ -f "~/.awsrc" ]]; then \
@@ -14,14 +14,14 @@ define _LOAD_AWSRC :=
 	fi
 endef
 
-define _SET_TERRAFORM_TFVARS_FILES :=
-	if [[ ! -z "$(TERRAFORM_TFVARS_FILES)" ]]; then \
-		TERRAFORM_TFVARS_FILES=($(TERRAFORM_TFVARS_FILES)); \
+define _SET_TERRAFORM_VAR_FILE_ARGS :=
+	if [[ ! -z "$(TERRAFORM_TFVARS_FILE_PATTERNS)" ]]; then \
+		TERRAFORM_TFVARS_FILE_PATTERNS=($(TERRAFORM_TFVARS_FILE_PATTERNS)); \
 	else \
-		TERRAFORM_TFVARS_FILES=(); \
+		TERRAFORM_TFVARS_FILE_PATTERNS=(); \
 	fi; \
 	TERRAFORM_VAR_FILE_ARGS=(); \
-	for TERRAFORM_TFVARS_FILE_PATTERN in $${TERRAFORM_TFVARS_FILES[@]}; do \
+	for TERRAFORM_TFVARS_FILE_PATTERN in $${TERRAFORM_TFVARS_FILE_PATTERNS[@]}; do \
 		for TERRAFORM_TFVARS_FILE in $$(find $(CURDIR) -name "$${TERRAFORM_TFVARS_FILE_PATTERN}"); do \
 			TERRAFORM_VAR_FILE_ARGS+=("-var-file" "$${TERRAFORM_TFVARS_FILE}"); \
 		done; \
@@ -34,7 +34,7 @@ all: apply destroy refresh output
 apply:
 	set -euxo pipefail; \
 	$(call _LOAD_AWSRC); \
-	$(call _SET_TERRAFORM_TFVARS_FILES); \
+	$(call _SET_TERRAFORM_VAR_FILE_ARGS); \
 	TERRAFORM_APPLY_ARGS=("-auto-approve" "$${TERRAFORM_VAR_FILE_ARGS[@]}"); \
 	terraform init; \
 	terraform apply "$${TERRAFORM_APPLY_ARGS[@]}"
@@ -42,7 +42,7 @@ apply:
 destroy:
 	set -euxo pipefail; \
 	$(call _LOAD_AWSRC); \
-	$(call _SET_TERRAFORM_TFVARS_FILES); \
+	$(call _SET_TERRAFORM_VAR_FILE_ARGS); \
 	TERRAFORM_DESTROY_ARGS=("-auto-approve" "$${TERRAFORM_VAR_FILE_ARGS[@]}"); \
 	terraform init; \
 	terraform destroy "$${TERRAFORM_DESTROY_ARGS[@]}"
@@ -50,7 +50,7 @@ destroy:
 refresh:
 	set -euxo pipefail; \
 	$(call _LOAD_AWSRC); \
-	$(call _SET_TERRAFORM_TFVARS_FILES); \
+	$(call _SET_TERRAFORM_VAR_FILE_ARGS); \
 	TERRAFORM_REFRESH_ARGS=("$${TERRAFORM_VAR_FILE_ARGS[@]}"); \
 	terraform init; \
 	terraform refresh "$${TERRAFORM_REFRESH_ARGS[@]}"
