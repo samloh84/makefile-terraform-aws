@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 .SHELLFLAGS := -ec
 
-.PHONY: build push save load rmi run rund run_shell exec_shell kill logs logsf rm start stop
+.PHONY: apply destroy refresh output
 
 TERRAFORM_TFVARS_FILE_PATTERNS := *.tfvars
 
@@ -29,7 +29,7 @@ define _SET_TERRAFORM_VAR_FILE_ARGS :=
 endef
 
 
-all: apply destroy refresh output
+all: apply
 
 apply:
 	set -euxo pipefail; \
@@ -60,3 +60,5 @@ output:
 	$(call _LOAD_AWSRC); \
 	terraform init; \
 	terraform output
+
+clean: destroy
