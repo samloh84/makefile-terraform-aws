@@ -10,7 +10,7 @@ define _LOAD_AWSRC :=
 		source "~/.awsrc"; \
 	fi; \
 	if [[ -f "$(CURDIR)/.awsrc" ]]; then \
-		source "~/.awsrc";  \
+		source "$(CURDIR)/.awsrc";  \
 	fi
 endef
 
