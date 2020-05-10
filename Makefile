@@ -62,3 +62,5 @@ output:
 	terraform output
 
 clean: destroy
+	set -euxo pipefail; \
+	rm -rf .terraform terraform.tfstate*
