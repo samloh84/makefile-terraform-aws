@@ -2,3 +2,4 @@
 *-help.txt
 terraform.tfvars
 .secret*
+.awsrc
